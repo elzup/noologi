@@ -1,0 +1,14 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": "out",
+    "predeploy": "yarn export",
+    "cleanUrls": true
+  },
+  "emulators": {
+    "firestore": { "host": "localhost", "port": "4000" }
+  }
+}
