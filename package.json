@@ -1,7 +1,7 @@
 {
-  "name": "scoreform",
+  "name": "noologi",
   "version": "1.0.0",
-  "description": "scoreform web app",
+  "description": "NooLogi app",
   "engines": {
     "node": "10"
   },
