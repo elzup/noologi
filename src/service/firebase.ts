@@ -1,6 +1,8 @@
 import * as firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
+import { useState } from 'react'
+import { Room, Card } from '../types'
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -49,4 +51,38 @@ export const usableUserId = async (userId: string) => {
   const docs = await fdb.collection('user').where('id', '==', userId).get()
 
   return docs.size === 0
+}
+
+export function makeCards() {
+  const nums = [...Array(100).keys()].map((v) => v + 1)
+
+  const obj: { [id: string]: Card } = {}
+
+  nums.forEach((v) => {
+    obj[v] = { text: String(v), open: false }
+  })
+  return obj
+}
+
+export const getRoom = async (roomId: string) => {
+  const fdb = getFirestore()
+  const room = await fdb.collection('room').doc(roomId).get()
+
+  if (room.exists) {
+    return room.data() as Room
+  }
+  room.ref.set({
+    cards: makeCards(),
+  })
+  return (await room.ref.get()).data() as Room
+}
+
+export function useRoom(roomId: string) {
+  const [room, setRoom] = useState<Room | null>(null)
+
+  getRoom(roomId).then((room) => {
+    setRoom(room)
+  })
+
+  return room
 }

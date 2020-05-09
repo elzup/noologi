@@ -39,3 +39,17 @@ export type Solves = {
     [qid: string]: Solve
   }
 }
+
+export type Card = {
+  open: boolean
+  text: string
+}
+
+export type Player = {
+  name: string
+  cards: { [id: string]: Card }
+}
+export type Room = {
+  players: { [id: string]: Player }
+  mountCards: { [id: string]: Card }
+}
