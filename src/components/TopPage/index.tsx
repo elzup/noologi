@@ -1,54 +1,30 @@
-import Link from 'next/link'
-import { useContext } from 'react'
-import { questions } from '../../questions'
-import { User } from '../../types'
-import App, { LoginContext } from '../App'
-
-function ListWithLogin({ user }: { user: User }) {
-  console.log(user)
-
-  return (
-    <ul>
-      {questions.map((q) => (
-        <li key={q.num}>
-          <Link href={`/q/${q.num}`}>
-            <a>{q.text}</a>
-          </Link>
-        </li>
-      ))}
-    </ul>
-  )
-}
-
-function List() {
-  return (
-    <ul>
-      {questions.map((q) => (
-        <li key={q.num}>
-          <Link href={`/q/${q.num}`}>
-            <a>{q.text}</a>
-          </Link>
-        </li>
-      ))}
-    </ul>
-  )
-}
+import { Button, Container } from "@material-ui/core";
+import { useRouter } from "next/router";
+import App from "../App";
+import { genRandomStr } from "../../utils";
 
 function TopPage() {
-  const [login] = useContext(LoginContext)
+  const router = useRouter();
 
-  if (login.status === 'comp') {
-    return <ListWithLogin user={login.user} />
-  }
-  return <List />
+  return (
+    <Button
+      onClick={() => {
+        router.push(`/room/${genRandomStr(5)}`);
+      }}
+    >
+      部屋を作る
+    </Button>
+  );
 }
 
 function TopPageContainer() {
   return (
-    <App>
-      <TopPage />
-    </App>
-  )
+    <Container>
+      <App>
+        <TopPage />
+      </App>
+    </Container>
+  );
 }
 
-export default TopPageContainer
+export default TopPageContainer;

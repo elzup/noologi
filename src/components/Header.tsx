@@ -1,17 +1,16 @@
-import { Typography } from '@material-ui/core'
-import { LoginInfo } from '../types'
-import LoginButton from './LoginButton'
+import { Typography } from "@material-ui/core";
+import { LoginInfo } from "../types";
 
 type Props = {
-  login: LoginInfo
-}
+  login: LoginInfo;
+};
 function Header({ login }: Props) {
   return (
     <header>
-      Score Form
-      {login.status === 'comp' && <Typography>{login.user.id}</Typography>}
-      <LoginButton />
+      <Typography variant="h3">のーろじっくルーム</Typography>
+      <Typography>オンラインで遊べる道具が揃うサービスです</Typography>
+      {login.status === "comp" && <Typography>{login.user.id}</Typography>}
     </header>
-  )
+  );
 }
-export default Header
+export default Header;

@@ -1,5 +1,4 @@
 import dynamic from 'next/dynamic'
-import { questions } from '../../questions'
 
 const QuestionLayout = dynamic(
   () => import('../../components/QuestionLayout'),
