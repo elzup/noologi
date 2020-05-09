@@ -1,8 +1,10 @@
 import * as firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
-import { useState } from 'react'
-import { Room, Card } from '../types'
+import 'firebase/database'
+import { useEffect, useState } from 'react'
+import { Card, Player, Room, RoomRaw } from '../types'
+import { genRandomStrWhite } from '../utils'
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -69,20 +71,114 @@ export const getRoom = async (roomId: string) => {
   const room = await fdb.collection('room').doc(roomId).get()
 
   if (room.exists) {
-    return room.data() as Room
+    return room.data() as RoomRaw
   }
-  room.ref.set({
-    cards: makeCards(),
+  const newRoom = {
+    mountCards: makeCards(),
+  }
+
+  room.ref.set(newRoom)
+  return newRoom
+}
+
+const isOfflineForFirestore = {
+  state: 'offline',
+  lastChanged: firebase.firestore.FieldValue.serverTimestamp(),
+}
+
+const isOnlineForFirestore = {
+  state: 'online',
+  lastChanged: firebase.firestore.FieldValue.serverTimestamp(),
+}
+
+export const updatePlayer = (
+  roomId: string,
+  players: { [id: string]: Player | false }
+) => {
+  const fdb = getFirestore()
+
+  const roomRef = fdb.collection('room').doc(roomId)
+
+  roomRef.update({ players })
+  return roomRef
+}
+export const joinPlayer = async (roomId: string, playerId: string) => {
+  const fdb = getFirestore()
+  const roomRef = fdb.collection('room').doc(roomId)
+  const room = (await roomRef.get()).data()
+
+  if (!room)return
+  const players = ((await roomRef.get()).data() as RoomRaw).players || {}
+
+  updatePlayer(roomId, {
+    ...players,
+    [playerId]: { name: 'Player-' + playerId, cards: {} },
   })
-  return (await room.ref.get()).data() as Room
+}
+export const initPlayer = async (roomId: string, playerId: string) => {
+  const rdbRef = firebase.database().ref(`/status/${roomId}/${playerId}`)
+
+  firebase
+    .database()
+    .ref(`.info/connected`)
+    .on('value', (snapshot) => {
+      if (snapshot.val() == false) {
+        // Instead of simply returning, we'll also set Firestore's state
+        // to 'offline'. This ensures that our Firestore cache is aware
+        // of the switch to 'offline.'
+        exitPlayer(roomId, playerId)
+        return
+      }
+
+      rdbRef
+        .onDisconnect()
+        .set(isOfflineForFirestore)
+        .then(function () {
+          rdbRef.set(isOnlineForFirestore)
+          joinPlayer(roomId, playerId)
+        })
+    })
+}
+
+export const exitPlayer = async (roomId: string, playerId: string) => {
+  const fdb = getFirestore()
+  const roomRef = fdb.collection('room').doc(roomId)
+  const room = (await roomRef.get()).data()
+
+  if (!room) return
+  const players = (room as RoomRaw).players || {}
+
+  delete players[playerId]
+
+  return updatePlayer(roomId, players)
+}
+
+function compRoom(raw: RoomRaw): Room {
+  const room: Room = { players: {}, mountCards: raw.mountCards }
+
+  Object.entries(raw.players || {}).forEach(([k, v]) => {
+    if (!v) return
+    room.players[k] = v
+  })
+  return room
 }
 
 export function useRoom(roomId: string) {
   const [room, setRoom] = useState<Room | null>(null)
+  const [playerId, setPlayerId] = useState<string | null>(null)
 
-  getRoom(roomId).then((room) => {
-    setRoom(room)
-  })
+  getRoom(roomId).then((raw) => setRoom(compRoom(raw)))
+  useEffect(() => {
+    if (!room) return
+    const newPlayerId = genRandomStrWhite(room.players, 5)
 
-  return room
+    initPlayer(roomId, newPlayerId).then(() => {
+      setPlayerId(newPlayerId)
+    })
+    return () => {
+      // exitPlayer(roomId, newPlayerId)
+    }
+  }, [!!room])
+
+  return [room, playerId]
 }

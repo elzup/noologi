@@ -1,12 +1,12 @@
-import { Container } from 'next/app'
 import { useRouter } from 'next/router'
+import { Container } from '@material-ui/core'
 import { useRoom } from '../../service/firebase'
 import App from '../App'
 
 function RoomMain({ roomId }: { roomId: string }) {
-  const room = useRoom(roomId)
+  const [room, player] = useRoom(roomId)
 
-  if (!room) return <p>loading</p>
+  if (!room || !player) return <p>loading</p>
 
   return (
     <div>

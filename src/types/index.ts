@@ -53,3 +53,8 @@ export type Room = {
   players: { [id: string]: Player }
   mountCards: { [id: string]: Card }
 }
+
+export type RoomRaw = {
+  players?: { [id: string]: Player | false }
+  mountCards: { [id: string]: Card }
+}
