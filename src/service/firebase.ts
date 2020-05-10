@@ -71,14 +71,14 @@ export const getRoom = async (roomId: string) => {
   const room = await fdb.collection('room').doc(roomId).get()
 
   if (room.exists) {
-    return room.data() as RoomRaw
+    return room.ref
   }
   const newRoom = {
     mountCards: makeCards(),
   }
 
   room.ref.set(newRoom)
-  return newRoom
+  return room.ref
 }
 
 const isOfflineForFirestore = {
@@ -107,7 +107,7 @@ export const joinPlayer = async (roomId: string, playerId: string) => {
   const roomRef = fdb.collection('room').doc(roomId)
   const room = (await roomRef.get()).data()
 
-  if (!room)return
+  if (!room) return
   const players = ((await roomRef.get()).data() as RoomRaw).players || {}
 
   updatePlayer(roomId, {
@@ -163,12 +163,20 @@ function compRoom(raw: RoomRaw): Room {
   return room
 }
 
-export function useRoom(roomId: string) {
+export function useRoom(roomId: string): [Room | null, string | null] {
   const [room, setRoom] = useState<Room | null>(null)
   const [playerId, setPlayerId] = useState<string | null>(null)
 
-  getRoom(roomId).then((raw) => setRoom(compRoom(raw)))
   useEffect(() => {
+    getRoom(roomId).then((ref) =>
+      ref.onSnapshot((snap) => {
+        setRoom(compRoom(snap.data() as RoomRaw))
+      })
+    )
+  }, [])
+  useEffect(() => {
+    console.log('effect')
+
     if (!room) return
     const newPlayerId = genRandomStrWhite(room.players, 5)
 
