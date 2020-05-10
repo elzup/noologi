@@ -2,7 +2,12 @@ import { useRouter } from 'next/router'
 import { Container, Button, Typography } from '@material-ui/core'
 import styled from 'styled-components'
 import { useState } from 'react'
-import { useRoom, drawCard, resetMountCards } from '../../service/firebase'
+import {
+  useRoom,
+  drawCard,
+  resetMountCards,
+  openCard,
+} from '../../service/firebase'
 import App from '../App'
 import PlayerBox, { MyPlayerBox } from './PlayerBox'
 
@@ -64,7 +69,10 @@ function RoomMain({ roomId }: { roomId: string }) {
         {me && (
           <div>
             <Typography variant="h6">{me.name}</Typography>
-            <MyPlayerBox player={me} />
+            <MyPlayerBox
+              player={me}
+              openCard={openCard.bind(null, room, roomId, playerId)}
+            />
           </div>
         )}
       </div>

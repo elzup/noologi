@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import _ from 'lodash'
-import { Typography } from '@material-ui/core'
+import { Typography, Button } from '@material-ui/core'
 import { Player } from '../../types'
 
 const Style = styled.div`
@@ -48,21 +48,31 @@ function PlayerBox({ player }: Props) {
       <Typography>{player.name}</Typography>
       <div className="cards-box">
         {_.map(player.cards, (card) => (
-          <div className="card">{card.open ? card.text : '?'}</div>
+          <div className="card" data-open={card.open}>
+            {card.open ? card.text : '?'}
+          </div>
         ))}
       </div>
     </Style>
   )
 }
 
-export function MyPlayerBox({ player }: Props) {
+export function MyPlayerBox({
+  player,
+  openCard,
+}: Props & { openCard: (cardId: string) => void }) {
   return (
     <Style data-owner>
       <Typography>{player.name}</Typography>
       <div className="cards-box">
-        {_.map(player.cards, (card) => (
-          <div className="card" data-open>
-            {card.text}
+        {_.map(player.cards, (card, cardId) => (
+          <div>
+            <div className="card" data-open>
+              {card.text}
+            </div>
+            {!card.open && (
+              <Button onClick={() => openCard(cardId)}>見せる</Button>
+            )}
           </div>
         ))}
       </div>

@@ -200,6 +200,19 @@ export async function drawCard(room: Room, roomId: string, playerId: string) {
   return roomRef.update(newRoom)
 }
 
+export async function openCard(
+  room: Room,
+  roomId: string,
+  playerId: string,
+  cardId: string
+) {
+  const { players } = _.cloneDeep(room)
+  const roomRef = getRoomRef(roomId)
+
+  players[playerId].cards[cardId].open = true
+  return roomRef.update({ players })
+}
+
 export function useRoom(roomId: string): [Room | null, string | null] {
   const [room, setRoom] = useState<Room | null>(null)
   const [playerId, setPlayerId] = useState<string | null>(null)
