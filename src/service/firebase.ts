@@ -74,12 +74,25 @@ export const getRoom = async (roomId: string) => {
   if (room.exists) {
     return room.ref
   }
-  const newRoom = {
+  await room.ref.set({
     mountCards: makeCards(),
-  }
-
-  room.ref.set(newRoom)
+  })
   return room.ref
+}
+export const resetMountCards = async (roomId: string) => {
+  const fdb = getFirestore()
+  const snap = await fdb.collection('room').doc(roomId).get()
+  const room = snap.data() as RoomRaw
+  const players: Record<string, Player> = {}
+
+  _.each(room.players, (v, k) => {
+    if (v) players[k] = { ...v, cards: {} }
+  })
+
+  await snap.ref.update({
+    players,
+    mountCards: makeCards(),
+  })
 }
 
 const isOfflineForFirestore = {

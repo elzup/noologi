@@ -2,11 +2,17 @@ import { useRouter } from 'next/router'
 import { Container, Button, Typography } from '@material-ui/core'
 import styled from 'styled-components'
 import { useState } from 'react'
-import { useRoom, drawCard } from '../../service/firebase'
+import { useRoom, drawCard, resetMountCards } from '../../service/firebase'
 import App from '../App'
+import PlayerBox, { MyPlayerBox } from './PlayerBox'
 
 const Style = styled.div`
   display: grid;
+  .players-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 4px;
+  }
 `
 
 function RoomMain({ roomId }: { roomId: string }) {
@@ -26,9 +32,9 @@ function RoomMain({ roomId }: { roomId: string }) {
       </div>
       <div className="players">
         <Typography variant="h5">Players</Typography>
-        <div>
+        <div className="players-box">
           {playerIds.map((id) => (
-            <div key={id}>{room.players[id].name}</div>
+            <PlayerBox key={id} player={room.players[id]} />
           ))}
         </div>
       </div>
@@ -42,12 +48,22 @@ function RoomMain({ roomId }: { roomId: string }) {
         >
           カードを引く
         </Button>
+        <Button
+          onClick={() => {
+            setLoading(true)
+
+            resetMountCards(roomId).then(() => setLoading(false))
+          }}
+        >
+          Reset: カードを集める
+        </Button>
       </div>
       <div className="stage">
         <Typography variant="h5">You</Typography>
         {me && (
           <div>
             <Typography variant="h6">{me.name}</Typography>
+            <MyPlayerBox player={me} />
           </div>
         )}
       </div>
