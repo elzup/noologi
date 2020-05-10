@@ -6,7 +6,13 @@
   "hosting": {
     "public": "out",
     "predeploy": "yarn export",
-    "cleanUrls": true
+    "cleanUrls": true,
+    "rewrites": [
+      {
+        "source": "/room/**",
+        "destination": "/room/[id].html"
+      }
+    ]
   },
   "emulators": {
     "firestore": {
