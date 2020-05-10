@@ -1,21 +1,16 @@
-import React from "react";
-import Document, { Html, Head, Main, NextScript } from "next/document";
-import { ServerStyleSheets } from "@material-ui/core/styles";
+import React from 'react'
+import Document, { Html, Head, Main, NextScript } from 'next/document'
+import { ServerStyleSheets } from '@material-ui/core/styles'
 
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html lang={"ja"}>
+      <Html lang={'ja'}>
         <Head>
-          <link
-            rel="icon"
-            type="image/png"
-            href="/icon-4x.png"
-            sizes="192x192"
-          />
+          <link rel="icon" type="image/png" href="/favicon-32x32.png" />
           <link rel="manifest" href="/manifest.json" />
-          <link rel="shortcut icon" href="/icon-1x.png" />
-          <link rel="apple-touch-icon" href="/icon-2x.png" />
+          <link rel="shortcut icon" href="/favicon-32x32.png" />
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
           <meta charSet="utf-8" />
           <meta name="theme-color" content="#001a3c" />
@@ -28,7 +23,7 @@ export default class MyDocument extends Document {
           <NextScript />
         </body>
       </Html>
-    );
+    )
   }
 }
 
@@ -56,15 +51,15 @@ MyDocument.getInitialProps = async (ctx) => {
   // 4. page.render
 
   // Render app and page and get the context of the page with collected side effects.
-  const sheets = new ServerStyleSheets();
-  const originalRenderPage = ctx.renderPage;
+  const sheets = new ServerStyleSheets()
+  const originalRenderPage = ctx.renderPage
 
   ctx.renderPage = () =>
     originalRenderPage({
       enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
-    });
+    })
 
-  const initialProps = await Document.getInitialProps(ctx);
+  const initialProps = await Document.getInitialProps(ctx)
 
   return {
     ...initialProps,
@@ -73,5 +68,5 @@ MyDocument.getInitialProps = async (ctx) => {
       ...React.Children.toArray(initialProps.styles),
       sheets.getStyleElement(),
     ],
-  };
-};
+  }
+}

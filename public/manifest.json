@@ -3,24 +3,14 @@
   "name": "のーろじ",
   "icons": [
     {
-      "src": "icon-1x.png",
+      "src": "favicon-32x32.png",
       "type": "image/png",
-      "sizes": "48x48"
+      "sizes": "32x32"
     },
     {
-      "src": "icon-2x.png",
+      "src": "apple-touch-icon.png",
       "type": "image/png",
-      "sizes": "96x96"
-    },
-    {
-      "src": "icon-4x.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "icon-512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "180x180"
     }
   ],
   "start_url": "./index.html",
