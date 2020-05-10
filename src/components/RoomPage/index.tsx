@@ -18,6 +18,20 @@ const Style = styled.div`
     grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 4px;
   }
+  .stage {
+    text-align: center;
+    height: 20vh;
+    img {
+      height: 50%;
+    }
+  }
+  .players,
+  .stage,
+  .my {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: solid gray;
+  }
 `
 
 function RoomMain({ roomId }: { roomId: string }) {
@@ -44,27 +58,23 @@ function RoomMain({ roomId }: { roomId: string }) {
         </div>
       </div>
       <div className="stage">
-        <div>Cards: {Object.values(room.mountCards).length}</div>
-        <Button
-          disabled={Object.values(room.mountCards).length === 0}
-          onClick={() => {
-            setLoading(true)
-            drawCard(room, roomId, playerId).then(() => setLoading(false))
-          }}
-        >
-          カードを引く
-        </Button>
-        <Button
-          onClick={() => {
-            setLoading(true)
-
-            resetMountCards(roomId).then(() => setLoading(false))
-          }}
-        >
-          Reset: カードを集める
-        </Button>
+        <Typography variant="subtitle1">
+          山札: {Object.values(room.mountCards).length}枚
+        </Typography>
+        <img src="/img/card.svg" />
+        <div>
+          <Button
+            disabled={Object.values(room.mountCards).length === 0}
+            onClick={() => drawCard(room, roomId, playerId)}
+          >
+            カードを引く
+          </Button>
+          <Button onClick={() => resetMountCards(roomId)}>
+            カードを集める
+          </Button>
+        </div>
       </div>
-      <div className="stage">
+      <div className="my">
         <Typography variant="h5">You</Typography>
         {me && (
           <div>

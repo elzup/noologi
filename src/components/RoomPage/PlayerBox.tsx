@@ -7,6 +7,7 @@ const Style = styled.div`
   border: solid #ccc;
   border-radius: 4px;
   margin-top: 8px;
+  padding: 4px;
   .cards-box {
     display: grid;
     position: relative;
@@ -15,14 +16,17 @@ const Style = styled.div`
     grid-template-columns: 1fr 1fr 1fr 1fr;
   }
   .card {
-    border: black solid 1px;
+    border: blue solid 2px;
     background: gray;
     color: white;
     height: 2rem;
     text-align: center;
     border-radius: 4px;
     padding-top: 1rem;
+    box-shadow: 0 0 0 4px white inset;
+
     &[data-open='true'] {
+      border-color: green;
       background: white;
       color: black;
     }
@@ -35,6 +39,7 @@ const Style = styled.div`
       height: 4rem;
       padding-top: 2rem;
       font-size: 2rem;
+      box-shadow: none;
     }
   }
 `
@@ -67,7 +72,7 @@ export function MyPlayerBox({
       <div className="cards-box">
         {_.map(player.cards, (card, cardId) => (
           <div>
-            <div className="card" data-open>
+            <div className="card" data-open={card.open}>
               {card.text}
             </div>
             {!card.open && (
