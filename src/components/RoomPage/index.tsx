@@ -15,7 +15,7 @@ const Style = styled.div`
   display: grid;
   .players-box {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 4px;
   }
   .stage {
