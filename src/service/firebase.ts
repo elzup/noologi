@@ -212,10 +212,11 @@ export function useRoom(roomId: string): [Room | null, string | null] {
     )
   }, [])
   useEffect(() => {
-    console.log('effect')
-
     if (!room) return
-    const newPlayerId = genRandomStrWhite(room.players, 5)
+
+    const newPlayerId = String(
+      (_.max(Object.keys(room.players).map(Number)) || 0) + 1
+    )
 
     initPlayer(roomId, newPlayerId).then(() => {
       setPlayerId(newPlayerId)
