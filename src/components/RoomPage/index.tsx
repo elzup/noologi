@@ -41,6 +41,7 @@ function RoomMain({ roomId }: { roomId: string }) {
       <div className="stage">
         <div>Cards: {Object.values(room.mountCards).length}</div>
         <Button
+          disabled={Object.values(room.mountCards).length === 0}
           onClick={() => {
             setLoading(true)
             drawCard(room, roomId, playerId).then(() => setLoading(false))
