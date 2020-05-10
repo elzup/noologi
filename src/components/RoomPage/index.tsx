@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router'
 import { Container, Button, Typography } from '@material-ui/core'
 import styled from 'styled-components'
-import { useRoom } from '../../service/firebase'
+import { useState } from 'react'
+import { useRoom, drawCard } from '../../service/firebase'
 import App from '../App'
 
 const Style = styled.div`
@@ -9,10 +10,13 @@ const Style = styled.div`
 `
 
 function RoomMain({ roomId }: { roomId: string }) {
-  const [room, player] = useRoom(roomId)
+  const [room, playerId] = useRoom(roomId)
+  const [loading, setLoading] = useState<boolean>(false)
 
-  if (!room || !player) return <p>loading</p>
-  console.log(room)
+  if (!room || !playerId) return <p>loading</p>
+
+  const playerIds = Object.keys(room.players).filter((v) => v !== playerId)
+  const me = room.players[playerId]
 
   return (
     <Style>
@@ -22,19 +26,30 @@ function RoomMain({ roomId }: { roomId: string }) {
       </div>
       <div className="players">
         <Typography variant="h5">Players</Typography>
+        <div>
+          {playerIds.map((id) => (
+            <div key={id}>{room.players[id].name}</div>
+          ))}
+        </div>
       </div>
       <div className="stage">
-        <div>Cards: </div>
+        <div>Cards: {Object.values(room.mountCards).length}</div>
         <Button
           onClick={() => {
-            //
+            setLoading(true)
+            drawCard(room, roomId, playerId).then(() => setLoading(false))
           }}
         >
-          Draw
+          カードを引く
         </Button>
       </div>
       <div className="stage">
         <Typography variant="h5">You</Typography>
+        {me && (
+          <div>
+            <Typography variant="h6">{me.name}</Typography>
+          </div>
+        )}
       </div>
     </Style>
   )

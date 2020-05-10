@@ -3,6 +3,7 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/database'
 import { useEffect, useState } from 'react'
+import _ from 'lodash'
 import { Card, Player, Room, RoomRaw } from '../types'
 import { genRandomStrWhite } from '../utils'
 
@@ -161,6 +162,29 @@ function compRoom(raw: RoomRaw): Room {
     room.players[k] = v
   })
   return room
+}
+const getRoomRef = (roomId: string) => {
+  const fdb = getFirestore()
+
+  return fdb.collection('room').doc(roomId)
+}
+
+const sample = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)]
+
+export async function drawCard(room: Room, roomId: string, playerId: string) {
+  const cardKey = sample(Object.keys(room.mountCards))
+  const newRoom = _.cloneDeep(room)
+  const mountCards = { ...room.mountCards }
+
+  const card = mountCards[cardKey]
+
+  delete mountCards[cardKey]
+  newRoom.mountCards = mountCards
+  newRoom.players[playerId].cards[cardKey] = card
+
+  const roomRef = getRoomRef(roomId)
+
+  return roomRef.update(newRoom)
 }
 
 export function useRoom(roomId: string): [Room | null, string | null] {
