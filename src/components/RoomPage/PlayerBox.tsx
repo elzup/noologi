@@ -41,6 +41,11 @@ const Style = styled.div`
       font-size: 2rem;
       box-shadow: none;
     }
+    @media screen and (max-width: 600px) {
+      .cards-box {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
   }
 `
 
