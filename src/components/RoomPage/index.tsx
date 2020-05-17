@@ -1,16 +1,10 @@
+import { Container, Typography } from '@material-ui/core'
 import { useRouter } from 'next/router'
-import { Container, Button, Typography } from '@material-ui/core'
 import styled from 'styled-components'
-import { useState } from 'react'
-import {
-  useRoom,
-  drawCard,
-  resetMountCards,
-  openCard,
-} from '../../service/firebase'
+import { openCard, useRoom } from '../../service/firebase'
 import App from '../App'
 import PlayerBox, { MyPlayerBox } from './PlayerBox'
-import CreateToolForm from './CreateToolForm'
+import StageArea from './StageArea'
 
 const Style = styled.div`
   display: grid;
@@ -20,11 +14,6 @@ const Style = styled.div`
     gap: 4px;
   }
   .stage {
-    text-align: center;
-    height: 20vh;
-    img {
-      height: 50%;
-    }
   }
   .players,
   .stage,
@@ -37,7 +26,6 @@ const Style = styled.div`
 
 function RoomMain({ roomId }: { roomId: string }) {
   const [room, playerId] = useRoom(roomId)
-  const [loading, setLoading] = useState<boolean>(false)
 
   if (!room || !playerId) return <p>loading</p>
 
@@ -59,37 +47,7 @@ function RoomMain({ roomId }: { roomId: string }) {
         </div>
       </div>
       <div className="stage">
-        {Object.entries(room.tools).map(([toolId, tool]) => {
-          switch (tool.tooltype) {
-            case 'card': {
-              return (
-                <div>
-                  <Typography variant="subtitle1">
-                    山札: {Object.values(tool.mountCards).length}枚
-                  </Typography>
-                  <img src="/img/card.svg" />
-                  <div>
-                    <Button
-                      disabled={Object.values(tool.mountCards).length === 0}
-                      onClick={() => drawCard(room, roomId, playerId, toolId)}
-                    >
-                      カードを引く
-                    </Button>
-                    <Button
-                      onClick={() => resetMountCards(roomId, Number(toolId))}
-                    >
-                      カードを集める
-                    </Button>
-                  </div>
-                </div>
-              )
-            }
-            default: {
-              return <p>実装中</p>
-            }
-          }
-        })}
-        <CreateToolForm roomId={roomId} />
+        <StageArea room={room} roomId={roomId} playerId={playerId} />
       </div>
       <div className="my">
         <Typography variant="h5">You</Typography>
