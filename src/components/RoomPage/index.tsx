@@ -75,7 +75,9 @@ function RoomMain({ roomId }: { roomId: string }) {
                     >
                       カードを引く
                     </Button>
-                    <Button onClick={() => resetMountCards(roomId)}>
+                    <Button
+                      onClick={() => resetMountCards(roomId, Number(toolId))}
+                    >
                       カードを集める
                     </Button>
                   </div>
@@ -87,7 +89,7 @@ function RoomMain({ roomId }: { roomId: string }) {
             }
           }
         })}
-        <CreateToolForm />
+        <CreateToolForm roomId={roomId} />
       </div>
       <div className="my">
         <Typography variant="h5">You</Typography>

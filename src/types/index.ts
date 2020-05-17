@@ -54,6 +54,7 @@ export type ToolType = typeof tools[number]
 
 export type CardTool = {
   tooltype: 'card'
+  template: { [key: string]: number }
   mountCards: { [id: string]: Card }
 }
 export type DiceTool = {

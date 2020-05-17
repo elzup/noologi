@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
 import {
-  Modal,
-  Button,
-  Typography,
-  Tabs,
-  Tab,
   Box,
-  Container,
+  Button,
+  Modal,
   Paper,
+  Tab,
+  Tabs,
+  Typography,
 } from '@material-ui/core'
+import React, { useState } from 'react'
+import CreateCardForm from './CreateCardForm'
 
 type TabPanelProps = {
   index: number
@@ -26,19 +26,15 @@ const TabPanel: React.FC<TabPanelProps> = (props) => {
       aria-labelledby={`scrollable-force-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box p={3}>{children}</Box>}
     </div>
   )
 }
 
-type Props = {}
-function CreateToolForm(props: Props) {
+type Props = { roomId: string }
+function CreateToolForm({ roomId }: Props) {
   const [open, setOpen] = useState<boolean>(false)
-  const [tab, setTab] = useState<number>(1)
+  const [tab, setTab] = useState<number>(0)
 
   return (
     <div>
@@ -52,12 +48,12 @@ function CreateToolForm(props: Props) {
             <Tab label="ダイス" />
           </Tabs>
           <TabPanel value={tab} index={0}>
-            Item One
+            <CreateCardForm roomId={roomId} />
           </TabPanel>
           <TabPanel value={tab} index={1}>
             TODO
           </TabPanel>
-          <TabPanel value={tab} index={1}>
+          <TabPanel value={tab} index={2}>
             TODO
           </TabPanel>
         </Paper>

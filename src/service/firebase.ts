@@ -4,8 +4,9 @@ import 'firebase/firestore'
 import 'firebase/database'
 import { useEffect, useState } from 'react'
 import _ from 'lodash'
-import { Card, Player, Room } from '../types'
+import { Card, Player, Room, CardTool } from '../types'
 import { genRandomStrWhite } from '../utils'
+import { CardFields } from '../components/RoomPage/CreateCardForm'
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -56,15 +57,26 @@ export const usableUserId = async (userId: string) => {
   return docs.size === 0
 }
 
-export function makeCards() {
-  const nums = [...Array(100).keys()].map((v) => v + 1)
+export function makeCards(template: { [key: string]: number }) {
+  const obj: Card[] = []
 
-  const obj: { [id: string]: Card } = {}
-
-  nums.forEach((v) => {
-    obj[v] = { text: String(v), open: false }
+  _.each(template, (num, k) => {
+    _.range(1, num + 1).forEach((v) => {
+      obj.push({ text: k + String(v), open: false })
+    })
   })
-  return obj
+
+  return _.keyBy(obj, 'name')
+}
+
+export const getRoomData = async (roomId: string) => {
+  const fdb = getFirestore()
+  const room = await fdb.collection('room').doc(roomId).get()
+
+  return room.data() as Room
+}
+const getRoomRef = (roomId: string) => {
+  return getFirestore().collection('room').doc(roomId)
 }
 
 export const getRoom = async (roomId: string) => {
@@ -80,7 +92,7 @@ export const getRoom = async (roomId: string) => {
   })
   return room.ref
 }
-export const resetMountCards = async (roomId: string) => {
+export const resetMountCards = async (roomId: string, toolId: number) => {
   const fdb = getFirestore()
   const snap = await fdb.collection('room').doc(roomId).get()
   const room = snap.data() as Room
@@ -90,9 +102,20 @@ export const resetMountCards = async (roomId: string) => {
     if (v) players[k] = { ...v, cards: {} }
   })
 
+  const tool = room.tools[toolId]
+
+  if (tool.tooltype !== 'card') throw new Error('invalid tooltype')
+
   await snap.ref.update({
+    createdAt: +new Date(),
     players,
-    mountCards: makeCards(),
+    tools: {
+      ...room.tools,
+      [toolId]: {
+        ...room.tools[toolId],
+        mountCards: makeCards(tool.template),
+      },
+    },
   })
 }
 
@@ -181,11 +204,6 @@ function compRoom(raw: Room): Room {
   })
   return room
 }
-const getRoomRef = (roomId: string) => {
-  const fdb = getFirestore()
-
-  return fdb.collection('room').doc(roomId)
-}
 
 const sample = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)]
 
@@ -211,6 +229,40 @@ export async function drawCard(
   const roomRef = getRoomRef(roomId)
 
   return roomRef.update(newRoom)
+}
+
+export async function addCardTool(roomId: string, fields: CardFields) {
+  const room = await getRoomData(roomId)
+
+  console.log({fields, room});
+  
+
+  const newToolId =
+    (_.max<number>(Object.keys(room.tools).map(Number)) || 0) + 1
+
+  const template: { [key: string]: number } = {}
+
+  _.range(1, 6).forEach((i) => {
+    const name = fields[`kind${i}` as keyof CardFields]
+
+    if (fields[`kind${i}` as keyof CardFields]) {
+      template[name] = Number(fields[`kind${i}Num` as keyof CardFields])
+    }
+  })
+  console.log({ template, fields })
+
+  const tool: CardTool = {
+    tooltype: 'card',
+    mountCards: makeCards(template),
+    template,
+  }
+
+  getRoomRef(roomId).update({
+    tools: {
+      ...room.tools,
+      [newToolId]: tool,
+    },
+  })
 }
 
 export async function openCard(
