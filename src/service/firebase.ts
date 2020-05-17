@@ -242,12 +242,8 @@ export async function drawCard(
 
 export async function addCardTool(roomId: string, fields: CardFields) {
   const room = await getRoomData(roomId)
-
-  console.log({ fields, room })
-
   const newToolId =
     (_.max<number>(Object.keys(room.tools).map(Number)) || 0) + 1
-
   const template: { [key: string]: number } = {}
 
   _.range(1, 6).forEach((i) => {
@@ -258,16 +254,9 @@ export async function addCardTool(roomId: string, fields: CardFields) {
     }
   })
   const mountCards = makeCards(template)
+  const tool: CardTool = { tooltype: 'card', mountCards, template }
 
-  console.log({ template, mountCards })
-
-  const tool: CardTool = {
-    tooltype: 'card',
-    mountCards,
-    template,
-  }
-
-  getRoomRef(roomId).update({
+  await getRoomRef(roomId).update({
     tools: {
       ...room.tools,
       [newToolId]: tool,

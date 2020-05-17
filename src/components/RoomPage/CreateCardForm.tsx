@@ -19,6 +19,7 @@ const kinds = ['kind1', 'kind2', 'kind3', 'kind4', 'kind5'] as const
 
 export type Props = {
   roomId: string
+  finishForm: () => void
 }
 
 const CreateCardForm = (props: Props) => {
@@ -38,7 +39,9 @@ const CreateCardForm = (props: Props) => {
     validateOnChange: false,
     validateOnBlur: true,
     onSubmit: (values, actions) => {
-      addCardTool(props.roomId, values)
+      addCardTool(props.roomId, values).then(() => {
+        props.finishForm()
+      })
       setTimeout(() => {
         actions.setSubmitting(false)
       }, 1000)
@@ -54,6 +57,41 @@ const CreateCardForm = (props: Props) => {
         flexDirection: 'column',
       }}
     >
+      <div>
+        プリセッツ:
+        <Button
+          onClick={() => {
+            formik.setFieldValue('kind1', '♠')
+            formik.setFieldValue('kind1Num', 13)
+            formik.setFieldValue('kind2', '♣')
+            formik.setFieldValue('kind2Num', 13)
+            formik.setFieldValue('kind3', '♡')
+            formik.setFieldValue('kind3Num', 13)
+            formik.setFieldValue('kind4', '◇')
+            formik.setFieldValue('kind4Num', 13)
+            formik.setFieldValue('kind5', 'JK')
+            formik.setFieldValue('kind5Num', 2)
+          }}
+        >
+          トランプ
+        </Button>
+        <Button
+          onClick={() => {
+            formik.setFieldValue('kind1', '村人')
+            formik.setFieldValue('kind1Num', 5)
+            formik.setFieldValue('kind2', '人狼')
+            formik.setFieldValue('kind2Num', 2)
+            formik.setFieldValue('kind3', '狂人')
+            formik.setFieldValue('kind3Num', 1)
+            formik.setFieldValue('kind4', '占い師')
+            formik.setFieldValue('kind4Num', 1)
+            formik.setFieldValue('kind5', '狩人')
+            formik.setFieldValue('kind5Num', 1)
+          }}
+        >
+          人狼
+        </Button>
+      </div>
       {kinds.map((kind, i) => (
         <div key={kind}>
           <TextField

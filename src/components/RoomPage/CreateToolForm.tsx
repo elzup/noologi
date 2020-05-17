@@ -48,13 +48,13 @@ function CreateToolForm({ roomId }: Props) {
             <Tab label="ダイス" />
           </Tabs>
           <TabPanel value={tab} index={0}>
-            <CreateCardForm roomId={roomId} />
+            <CreateCardForm roomId={roomId} finishForm={() => setOpen(false)} />
           </TabPanel>
           <TabPanel value={tab} index={1}>
-            TODO
+            comming soon
           </TabPanel>
           <TabPanel value={tab} index={2}>
-            TODO
+            comming soon
           </TabPanel>
         </Paper>
       </Modal>
