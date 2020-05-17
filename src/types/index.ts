@@ -54,7 +54,25 @@ export type Room = {
   mountCards: { [id: string]: Card }
 }
 
+export const tools = ['card', 'dice', 'roulette', 'memo'] as const
+export type ToolType = typeof tools[number]
+
+export type CardTool = {
+  name: 'card'
+  mountCards: { [id: string]: Card }
+}
+export type DiceTool = {
+  name: 'dice'
+  mountCards: { [id: string]: Card }
+}
+export type MemoTool = {
+  name: 'memo'
+  mountCards: { [id: string]: Card }
+}
+export type Tool = CardTool | DiceTool | MemoTool
+
 export type RoomRaw = {
   players?: { [id: string]: Player | false }
   mountCards: { [id: string]: Card }
+  tools: { [id: string]: Tool }
 }
