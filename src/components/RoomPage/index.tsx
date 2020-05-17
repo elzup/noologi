@@ -10,6 +10,7 @@ import {
 } from '../../service/firebase'
 import App from '../App'
 import PlayerBox, { MyPlayerBox } from './PlayerBox'
+import CreateToolForm from './CreateToolForm'
 
 const Style = styled.div`
   display: grid;
@@ -86,6 +87,7 @@ function RoomMain({ roomId }: { roomId: string }) {
             }
           }
         })}
+        <CreateToolForm />
       </div>
       <div className="my">
         <Typography variant="h5">You</Typography>
