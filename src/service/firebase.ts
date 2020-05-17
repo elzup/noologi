@@ -1,12 +1,11 @@
 import * as firebase from 'firebase/app'
 import 'firebase/auth'
-import 'firebase/firestore'
 import 'firebase/database'
-import { useEffect, useState } from 'react'
+import 'firebase/firestore'
 import _ from 'lodash'
-import { Card, Player, Room, CardTool } from '../types'
-import { genRandomStrWhite } from '../utils'
+import { useEffect, useState } from 'react'
 import { CardFields } from '../components/RoomPage/CreateCardForm'
+import { Card, CardTool, Player, Room } from '../types'
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,

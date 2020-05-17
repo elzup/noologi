@@ -1,9 +1,9 @@
-import { Button, Typography, Input, TextField } from '@material-ui/core'
+import { Button, TextField, Typography } from '@material-ui/core'
 import _ from 'lodash'
-import styled from 'styled-components'
 import { useState } from 'react'
-import { Player } from '../../types'
+import styled from 'styled-components'
 import { updatePlayer } from '../../service/firebase'
+import { Player } from '../../types'
 
 const Style = styled.div`
   border: solid #ccc;
@@ -59,11 +59,11 @@ function PlayerBox({ player }: Props) {
     <Style>
       <Typography>{player.name}</Typography>
       <div className="cards-box">
-        {_.map(player.tools, (playerTool) => {
+        {_.map(player.tools, (playerTool, ti) => {
           switch (playerTool.tooltype) {
             case 'card':
               return _.map(playerTool.cards, (card) => (
-                <div className="card" data-open={card.open}>
+                <div key={ti} className="card" data-open={card.open}>
                   {card.open ? card.text : '?'}
                 </div>
               ))
@@ -125,7 +125,7 @@ export function MyPlayerBox({
           switch (playerTool.tooltype) {
             case 'card':
               return _.map(playerTool.cards, (card, cardId) => (
-                <div>
+                <div key={toolId}>
                   <div className="card" data-open={card.open}>
                     {card.text}
                   </div>
