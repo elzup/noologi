@@ -220,7 +220,10 @@ export async function drawCard(
   const tool = room.tools[toolId]
 
   if (tool.tooltype !== 'card') throw Error('invalid tooltype')
-  const cardKey = sample(Object.keys(tool.mountCards))
+
+  const cardKey = sample(
+    Object.keys(_.pickBy(tool.mountCards, (v) => !v.removed))
+  )
   const newRoom = _.cloneDeep(room)
   const mountCards = { ...tool.mountCards }
 
