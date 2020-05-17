@@ -1,7 +1,9 @@
-import { Button, Typography } from '@material-ui/core'
+import { Button, Typography, Input, TextField } from '@material-ui/core'
 import _ from 'lodash'
 import styled from 'styled-components'
+import { useState } from 'react'
 import { Player } from '../../types'
+import { updatePlayer } from '../../service/firebase'
 
 const Style = styled.div`
   border: solid #ccc;
@@ -78,10 +80,46 @@ function PlayerBox({ player }: Props) {
 export function MyPlayerBox({
   player,
   openCard,
-}: Props & { openCard: (cardId: string, toolId: string) => void }) {
+  playerId,
+  roomId,
+}: Props & {
+  roomId: string
+  playerId: string
+  openCard: (cardId: string, toolId: string) => void
+}) {
+  const [edit, setEdit] = useState<boolean>(false)
+  const [editName, setEditName] = useState<string>(player.name)
+
   return (
     <Style data-owner>
-      <Typography>{player.name}</Typography>
+      {edit ? (
+        <div>
+          <TextField
+            type="text"
+            onChange={(e) => {
+              setEditName(e.target.value)
+            }}
+            defaultValue={player.name}
+          />
+          <Button
+            onClick={() => {
+              updatePlayer(roomId, playerId, {
+                ...player,
+                name: editName,
+              }).then(() => {
+                setEdit(false)
+              })
+            }}
+          >
+            決定
+          </Button>
+        </div>
+      ) : (
+        <div>
+          <Typography>{player.name}</Typography>
+          <Button onClick={() => setEdit(true)}>変更</Button>
+        </div>
+      )}
       <div className="cards-box">
         {_.map(player.tools, (playerTool, toolId) => {
           switch (playerTool.tooltype) {

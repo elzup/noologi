@@ -55,7 +55,9 @@ function RoomMain({ roomId }: { roomId: string }) {
           <div>
             <Typography variant="h6">{me.name}</Typography>
             <MyPlayerBox
+              roomId={roomId}
               player={me}
+              playerId={playerId}
               openCard={openCard.bind(null, room, roomId, playerId)}
             />
           </div>

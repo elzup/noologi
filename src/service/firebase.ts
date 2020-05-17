@@ -133,7 +133,7 @@ const isOnlineForFirestore = {
   lastChanged: firebase.firestore.FieldValue.serverTimestamp(),
 }
 
-export const updatePlayer = (
+export const updatePlayers = (
   roomId: string,
   players: { [id: string]: Player | false }
 ) => {
@@ -152,7 +152,7 @@ export const joinPlayer = async (roomId: string, playerId: string) => {
   if (!room) return
   const players = ((await roomRef.get()).data() as Room).players || {}
 
-  updatePlayer(roomId, {
+  updatePlayers(roomId, {
     ...players,
     [playerId]: { name: 'Player-' + playerId, tools: {} },
   })
@@ -192,7 +192,7 @@ export const exitPlayer = async (roomId: string, playerId: string) => {
 
   delete players[playerId]
 
-  return updatePlayer(roomId, players)
+  return updatePlayers(roomId, players)
 }
 
 function compRoom(raw: Room): Room {
@@ -262,6 +262,21 @@ export async function addCardTool(roomId: string, fields: CardFields) {
       [newToolId]: tool,
     },
   })
+}
+
+export async function updatePlayer(
+  roomId: string,
+  playerId: string,
+  player: Player
+) {
+  const fdb = getFirestore()
+  const roomRef = fdb.collection('room').doc(roomId)
+  const room = (await roomRef.get()).data()
+
+  if (!room) return
+  const players = ((await roomRef.get()).data() as Room).players || {}
+
+  updatePlayers(roomId, Object.assign({}, players, { [playerId]: player }))
 }
 
 export async function openCard(
