@@ -62,11 +62,11 @@ export function makeCards(template: { [key: string]: number }) {
 
   _.each(template, (num, k) => {
     _.range(1, num + 1).forEach((v) => {
-      obj.push({ text: k + String(v), open: false })
+      obj.push({ text: k + String(v), open: false, removed: false })
     })
   })
 
-  return _.keyBy(obj, 'name')
+  return _.keyBy(obj, 'text')
 }
 
 export const getRoomData = async (roomId: string) => {
@@ -87,6 +87,7 @@ export const getRoom = async (roomId: string) => {
     return room.ref
   }
   await room.ref.set({
+    createdAt: +new Date(),
     players: {},
     tools: {},
   })
@@ -99,7 +100,11 @@ export const resetMountCards = async (roomId: string, toolId: number) => {
   const players: Record<string, Player> = {}
 
   _.each(room.players, (v, k) => {
-    if (v) players[k] = { ...v, cards: {} }
+    if (v)
+      players[k] = {
+        ...v,
+        tools: { ...v.tools, [toolId]: { tooltype: 'card', cards: {} } },
+      }
   })
 
   const tool = room.tools[toolId]
@@ -107,7 +112,6 @@ export const resetMountCards = async (roomId: string, toolId: number) => {
   if (tool.tooltype !== 'card') throw new Error('invalid tooltype')
 
   await snap.ref.update({
-    createdAt: +new Date(),
     players,
     tools: {
       ...room.tools,
@@ -150,7 +154,7 @@ export const joinPlayer = async (roomId: string, playerId: string) => {
 
   updatePlayer(roomId, {
     ...players,
-    [playerId]: { name: 'Player-' + playerId, cards: {} },
+    [playerId]: { name: 'Player-' + playerId, tools: {} },
   })
 }
 export const initPlayer = async (roomId: string, playerId: string) => {
@@ -220,22 +224,26 @@ export async function drawCard(
   const newRoom = _.cloneDeep(room)
   const mountCards = { ...tool.mountCards }
 
-  const card = mountCards[cardKey]
-
-  delete mountCards[cardKey]
+  mountCards[cardKey].removed = true
   newRoom.tools[toolId] = { ...tool, mountCards }
-  newRoom.players[playerId].cards[cardKey] = card
 
-  const roomRef = getRoomRef(roomId)
+  const playerTool = newRoom.players[playerId].tools[toolId] || {
+    tooltype: 'card',
+    cards: {},
+  }
 
-  return roomRef.update(newRoom)
+  if (playerTool.tooltype !== 'card') throw new Error('invalid tooltype')
+  playerTool.cards[cardKey] = mountCards[cardKey]
+
+  newRoom.players[playerId].tools[toolId] = playerTool
+
+  return getRoomRef(roomId).update(newRoom)
 }
 
 export async function addCardTool(roomId: string, fields: CardFields) {
   const room = await getRoomData(roomId)
 
-  console.log({fields, room});
-  
+  console.log({ fields, room })
 
   const newToolId =
     (_.max<number>(Object.keys(room.tools).map(Number)) || 0) + 1
@@ -249,11 +257,13 @@ export async function addCardTool(roomId: string, fields: CardFields) {
       template[name] = Number(fields[`kind${i}Num` as keyof CardFields])
     }
   })
-  console.log({ template, fields })
+  const mountCards = makeCards(template)
+
+  console.log({ template, mountCards })
 
   const tool: CardTool = {
     tooltype: 'card',
-    mountCards: makeCards(template),
+    mountCards,
     template,
   }
 
@@ -269,12 +279,15 @@ export async function openCard(
   room: Room,
   roomId: string,
   playerId: string,
-  cardId: string
+  cardId: string,
+  toolId: string
 ) {
   const { players } = _.cloneDeep(room)
   const roomRef = getRoomRef(roomId)
+  const playerTool = players[playerId].tools[toolId]
 
-  players[playerId].cards[cardId].open = true
+  if (playerTool.tooltype !== 'card') throw new Error('invalid tooltype')
+  playerTool.cards[cardId].open = true
   return roomRef.update({ players })
 }
 

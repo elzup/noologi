@@ -1,6 +1,6 @@
-import styled from 'styled-components'
+import { Button, Typography } from '@material-ui/core'
 import _ from 'lodash'
-import { Typography, Button } from '@material-ui/core'
+import styled from 'styled-components'
 import { Player } from '../../types'
 
 const Style = styled.div`
@@ -57,11 +57,19 @@ function PlayerBox({ player }: Props) {
     <Style>
       <Typography>{player.name}</Typography>
       <div className="cards-box">
-        {_.map(player.cards, (card) => (
-          <div className="card" data-open={card.open}>
-            {card.open ? card.text : '?'}
-          </div>
-        ))}
+        {_.map(player.tools, (playerTool) => {
+          switch (playerTool.tooltype) {
+            case 'card':
+              return _.map(playerTool.cards, (card) => (
+                <div className="card" data-open={card.open}>
+                  {card.open ? card.text : '?'}
+                </div>
+              ))
+
+            default:
+              return null
+          }
+        })}
       </div>
     </Style>
   )
@@ -70,21 +78,31 @@ function PlayerBox({ player }: Props) {
 export function MyPlayerBox({
   player,
   openCard,
-}: Props & { openCard: (cardId: string) => void }) {
+}: Props & { openCard: (cardId: string, toolId: string) => void }) {
   return (
     <Style data-owner>
       <Typography>{player.name}</Typography>
       <div className="cards-box">
-        {_.map(player.cards, (card, cardId) => (
-          <div>
-            <div className="card" data-open={card.open}>
-              {card.text}
-            </div>
-            {!card.open && (
-              <Button onClick={() => openCard(cardId)}>見せる</Button>
-            )}
-          </div>
-        ))}
+        {_.map(player.tools, (playerTool, toolId) => {
+          switch (playerTool.tooltype) {
+            case 'card':
+              return _.map(playerTool.cards, (card, cardId) => (
+                <div>
+                  <div className="card" data-open={card.open}>
+                    {card.text}
+                  </div>
+                  {!card.open && (
+                    <Button onClick={() => openCard(cardId, toolId)}>
+                      見せる
+                    </Button>
+                  )}
+                </div>
+              ))
+
+            default:
+              return null
+          }
+        })}
       </div>
     </Style>
   )

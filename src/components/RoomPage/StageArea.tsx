@@ -1,6 +1,7 @@
 import { Button, Typography } from '@material-ui/core'
 import React from 'react'
 import styled from 'styled-components'
+import _ from 'lodash'
 import { drawCard, resetMountCards } from '../../service/firebase'
 import { Room, CardTool } from '../../types'
 import CreateToolForm from './CreateToolForm'
@@ -31,15 +32,17 @@ function CardArea({
   tool,
   toolId,
 }: Props & { tool: CardTool; toolId: string }) {
+  const mountCards = _.filter(tool.mountCards, (v) => !v.removed)
+
   return (
     <div>
       <Typography variant="subtitle1">
-        山札: {Object.values(tool.mountCards).length}枚
+        山札: {Object.values(mountCards).length}枚
       </Typography>
       <img src="/img/card.svg" />
       <div>
         <Button
-          disabled={Object.values(tool.mountCards).length === 0}
+          disabled={Object.values(mountCards).length === 0}
           onClick={() => drawCard(room, roomId, playerId, toolId)}
         >
           カードを引く

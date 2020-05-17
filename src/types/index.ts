@@ -43,11 +43,14 @@ export type Solves = {
 export type Card = {
   open: boolean
   text: string
+  removed: boolean
 }
 
 export type Player = {
   name: string
-  cards: { [id: string]: Card }
+  tools: {
+    [id: string]: PlayerTool
+  }
 }
 export const tools = ['card', 'dice', 'roulette', 'memo'] as const
 export type ToolType = typeof tools[number]
@@ -59,13 +62,27 @@ export type CardTool = {
 }
 export type DiceTool = {
   tooltype: 'dice'
-  mountCards: { [id: string]: Card }
+  items: string[]
+  number: string
+  history: string[]
 }
 export type MemoTool = {
   tooltype: 'memo'
-  mountCards: { [id: string]: Card }
+  text: string
 }
 export type Tool = CardTool | DiceTool | MemoTool
+
+export type CardPlayerTool = {
+  tooltype: 'card'
+  cards: { [id: string]: Card }
+}
+export type DicePlayerTool = {
+  tooltype: 'dice'
+}
+export type MemoPlayerTool = {
+  tooltype: 'memo'
+}
+export type PlayerTool = CardPlayerTool | DicePlayerTool | MemoPlayerTool
 
 export type Room = {
   createdAt: number
