@@ -1,0 +1,9 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/room/**",
+      "destination": "/room/[id].html"
+    }
+  ]
+}
