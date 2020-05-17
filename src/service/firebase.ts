@@ -4,7 +4,7 @@ import 'firebase/firestore'
 import 'firebase/database'
 import { useEffect, useState } from 'react'
 import _ from 'lodash'
-import { Card, Player, Room, RoomRaw } from '../types'
+import { Card, Player, Room } from '../types'
 import { genRandomStrWhite } from '../utils'
 
 const firebaseConfig = {
@@ -75,14 +75,15 @@ export const getRoom = async (roomId: string) => {
     return room.ref
   }
   await room.ref.set({
-    mountCards: makeCards(),
+    players: {},
+    tools: {},
   })
   return room.ref
 }
 export const resetMountCards = async (roomId: string) => {
   const fdb = getFirestore()
   const snap = await fdb.collection('room').doc(roomId).get()
-  const room = snap.data() as RoomRaw
+  const room = snap.data() as Room
   const players: Record<string, Player> = {}
 
   _.each(room.players, (v, k) => {
@@ -122,7 +123,7 @@ export const joinPlayer = async (roomId: string, playerId: string) => {
   const room = (await roomRef.get()).data()
 
   if (!room) return
-  const players = ((await roomRef.get()).data() as RoomRaw).players || {}
+  const players = ((await roomRef.get()).data() as Room).players || {}
 
   updatePlayer(roomId, {
     ...players,
@@ -160,15 +161,19 @@ export const exitPlayer = async (roomId: string, playerId: string) => {
   const room = (await roomRef.get()).data()
 
   if (!room) return
-  const players = (room as RoomRaw).players || {}
+  const players = (room as Room).players || {}
 
   delete players[playerId]
 
   return updatePlayer(roomId, players)
 }
 
-function compRoom(raw: RoomRaw): Room {
-  const room: Room = { players: {}, mountCards: raw.mountCards }
+function compRoom(raw: Room): Room {
+  const room: Room = {
+    createdAt: raw.createdAt,
+    players: {},
+    tools: raw.tools || {},
+  }
 
   Object.entries(raw.players || {}).forEach(([k, v]) => {
     if (!v) return
@@ -184,15 +189,23 @@ const getRoomRef = (roomId: string) => {
 
 const sample = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)]
 
-export async function drawCard(room: Room, roomId: string, playerId: string) {
-  const cardKey = sample(Object.keys(room.mountCards))
+export async function drawCard(
+  room: Room,
+  roomId: string,
+  playerId: string,
+  toolId: string
+) {
+  const tool = room.tools[toolId]
+
+  if (tool.tooltype !== 'card') throw Error('invalid tooltype')
+  const cardKey = sample(Object.keys(tool.mountCards))
   const newRoom = _.cloneDeep(room)
-  const mountCards = { ...room.mountCards }
+  const mountCards = { ...tool.mountCards }
 
   const card = mountCards[cardKey]
 
   delete mountCards[cardKey]
-  newRoom.mountCards = mountCards
+  newRoom.tools[toolId] = { ...tool, mountCards }
   newRoom.players[playerId].cards[cardKey] = card
 
   const roomRef = getRoomRef(roomId)
@@ -220,7 +233,7 @@ export function useRoom(roomId: string): [Room | null, string | null] {
   useEffect(() => {
     getRoom(roomId).then((ref) =>
       ref.onSnapshot((snap) => {
-        setRoom(compRoom(snap.data() as RoomRaw))
+        setRoom(compRoom(snap.data() as Room))
       })
     )
   }, [])

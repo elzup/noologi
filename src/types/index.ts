@@ -49,30 +49,25 @@ export type Player = {
   name: string
   cards: { [id: string]: Card }
 }
-export type Room = {
-  players: { [id: string]: Player }
-  mountCards: { [id: string]: Card }
-}
-
 export const tools = ['card', 'dice', 'roulette', 'memo'] as const
 export type ToolType = typeof tools[number]
 
 export type CardTool = {
-  name: 'card'
+  tooltype: 'card'
   mountCards: { [id: string]: Card }
 }
 export type DiceTool = {
-  name: 'dice'
+  tooltype: 'dice'
   mountCards: { [id: string]: Card }
 }
 export type MemoTool = {
-  name: 'memo'
+  tooltype: 'memo'
   mountCards: { [id: string]: Card }
 }
 export type Tool = CardTool | DiceTool | MemoTool
 
-export type RoomRaw = {
-  players?: { [id: string]: Player | false }
-  mountCards: { [id: string]: Card }
+export type Room = {
+  createdAt: number
+  players: { [id: string]: Player }
   tools: { [id: string]: Tool }
 }

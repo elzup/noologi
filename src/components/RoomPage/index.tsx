@@ -58,21 +58,34 @@ function RoomMain({ roomId }: { roomId: string }) {
         </div>
       </div>
       <div className="stage">
-        <Typography variant="subtitle1">
-          山札: {Object.values(room.mountCards).length}枚
-        </Typography>
-        <img src="/img/card.svg" />
-        <div>
-          <Button
-            disabled={Object.values(room.mountCards).length === 0}
-            onClick={() => drawCard(room, roomId, playerId)}
-          >
-            カードを引く
-          </Button>
-          <Button onClick={() => resetMountCards(roomId)}>
-            カードを集める
-          </Button>
-        </div>
+        {Object.entries(room.tools).map(([toolId, tool]) => {
+          switch (tool.tooltype) {
+            case 'card': {
+              return (
+                <div>
+                  <Typography variant="subtitle1">
+                    山札: {Object.values(tool.mountCards).length}枚
+                  </Typography>
+                  <img src="/img/card.svg" />
+                  <div>
+                    <Button
+                      disabled={Object.values(tool.mountCards).length === 0}
+                      onClick={() => drawCard(room, roomId, playerId, toolId)}
+                    >
+                      カードを引く
+                    </Button>
+                    <Button onClick={() => resetMountCards(roomId)}>
+                      カードを集める
+                    </Button>
+                  </div>
+                </div>
+              )
+            }
+            default: {
+              return <p>実装中</p>
+            }
+          }
+        })}
       </div>
       <div className="my">
         <Typography variant="h5">You</Typography>
