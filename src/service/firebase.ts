@@ -74,7 +74,7 @@ export const getRoomData = async (roomId: string) => {
 
   return room.data() as Room
 }
-const getRoomRef = (roomId: string) => {
+export const getRoomRef = (roomId: string) => {
   return getFirestore().collection('room').doc(roomId)
 }
 
