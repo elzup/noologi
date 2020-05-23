@@ -8,6 +8,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import React, { useState } from 'react'
+import { addMemoTool } from '../../service/memoService'
 import CreateCardForm from './CreateCardForm'
 
 type TabPanelProps = {
@@ -51,7 +52,7 @@ function CreateToolForm({ roomId }: Props) {
             <CreateCardForm roomId={roomId} finishForm={() => setOpen(false)} />
           </TabPanel>
           <TabPanel value={tab} index={1}>
-            comming soon
+            <Button onClick={() => addMemoTool()} />
           </TabPanel>
           <TabPanel value={tab} index={2}>
             comming soon
