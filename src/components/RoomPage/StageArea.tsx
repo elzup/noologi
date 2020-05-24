@@ -1,9 +1,10 @@
-import { Button, Typography } from '@material-ui/core'
-import React from 'react'
+import { Button, Typography, TextField } from '@material-ui/core'
+import React, { useEffect, useState, useRef } from 'react'
 import styled from 'styled-components'
 import _ from 'lodash'
 import { drawCard, resetMountCards } from '../../service/firebase'
-import { Room, CardTool } from '../../types'
+import { Room, CardTool, MemoTool } from '../../types'
+import { updateMemo } from '../../service/memoService'
 import CreateToolForm from './CreateToolForm'
 
 const Style = styled.div`
@@ -55,6 +56,44 @@ function CardArea({
   )
 }
 
+function MemoArea({
+  room,
+  roomId,
+  playerId,
+  tool,
+  toolId,
+}: Props & { tool: MemoTool; toolId: string }) {
+  const [draft, setDraft] = useState<string>(tool.text)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    setDraft(tool.text)
+    if (inputRef.current) inputRef.current.value = tool.text
+  }, [tool.text])
+
+  return (
+    <div>
+      <TextField
+        ref={inputRef}
+        rows={draft.split('\n').length}
+        multiline
+        defaultValue={tool.text}
+        onChange={(e) => {
+          setDraft(e.target.value)
+        }}
+      />
+      <Button
+        disabled={tool.text === draft}
+        onClick={() => {
+          updateMemo(roomId, toolId, draft)
+        }}
+      >
+        保存する
+      </Button>
+    </div>
+  )
+}
+
 function StageArea(props: Props) {
   const { room, roomId } = props
 
@@ -65,6 +104,11 @@ function StageArea(props: Props) {
           case 'card': {
             return (
               <CardArea key={toolId} {...props} tool={tool} toolId={toolId} />
+            )
+          }
+          case 'memo': {
+            return (
+              <MemoArea key={toolId} {...props} tool={tool} toolId={toolId} />
             )
           }
           default: {
