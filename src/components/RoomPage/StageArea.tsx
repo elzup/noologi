@@ -1,10 +1,10 @@
-import { Button, Typography, TextField } from '@material-ui/core'
-import React, { useEffect, useState, useRef } from 'react'
-import styled from 'styled-components'
+import { Button, TextField, Typography } from '@material-ui/core'
 import _ from 'lodash'
-import { drawCard, resetMountCards } from '../../service/firebase'
-import { Room, CardTool, MemoTool } from '../../types'
+import React, { useEffect, useRef, useState } from 'react'
+import styled from 'styled-components'
 import { updateMemo } from '../../service/memoService'
+import { CardTool, MemoTool, Room } from '../../types'
+import { drawCard, resetMountCards } from '../../service/cardService'
 import CreateToolForm from './CreateToolForm'
 
 const Style = styled.div`
@@ -57,9 +57,7 @@ function CardArea({
 }
 
 function MemoArea({
-  room,
   roomId,
-  playerId,
   tool,
   toolId,
 }: Props & { tool: MemoTool; toolId: string }) {

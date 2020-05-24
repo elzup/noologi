@@ -1,8 +1,9 @@
 import { Container, Typography } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
-import { openCard, useRoom } from '../../service/firebase'
+import { useRoom } from '../../service/firebase'
 import App from '../App'
+import { openCard } from '../../service/cardService'
 import PlayerBox, { MyPlayerBox } from './PlayerBox'
 import StageArea from './StageArea'
 

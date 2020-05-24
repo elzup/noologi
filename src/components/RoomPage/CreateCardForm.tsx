@@ -1,7 +1,7 @@
 import { Button, TextField } from '@material-ui/core'
 import { useFormik } from 'formik'
 import * as React from 'react'
-import { addCardTool } from '../../service/firebase'
+import { addCardTool } from '../../service/cardService'
 
 export type CardFields = {
   kind1: string
@@ -38,6 +38,22 @@ const CreateCardForm = (props: Props) => {
     },
     validateOnChange: false,
     validateOnBlur: true,
+    validate: (values) => {
+      const errors: Partial<CardFields> = {}
+
+      if (
+        !(
+          values.kind1 ||
+          values.kind2 ||
+          values.kind3 ||
+          values.kind4 ||
+          values.kind5
+        )
+      ) {
+        errors.kind1 = '名前が空です'
+      }
+      return errors
+    },
     onSubmit: (values, actions) => {
       addCardTool(props.roomId, values).then(() => {
         props.finishForm()

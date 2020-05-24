@@ -13,3 +13,6 @@ export function genRandomStrWhite(libs: { [id: string]: unknown }, len = 5) {
   } while (libs[id])
   return id
 }
+
+export const sample = <T>(arr: T[]) =>
+  arr[Math.floor(Math.random() * arr.length)]
