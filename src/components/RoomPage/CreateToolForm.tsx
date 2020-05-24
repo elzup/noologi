@@ -52,7 +52,14 @@ function CreateToolForm({ roomId }: Props) {
             <CreateCardForm roomId={roomId} finishForm={() => setOpen(false)} />
           </TabPanel>
           <TabPanel value={tab} index={1}>
-            <Button onClick={() => addMemoTool()} />
+            <Button
+              onClick={() => {
+                addMemoTool(roomId)
+                setOpen(false)
+              }}
+            >
+              作る
+            </Button>
           </TabPanel>
           <TabPanel value={tab} index={2}>
             comming soon
