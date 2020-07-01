@@ -46,6 +46,6 @@
     "eslint-config-nzap": "1.4.6",
     "firebase-tools": "8.2.0",
     "rimraf": "3.0.2",
-    "typescript": "3.8.3"
+    "typescript": "3.9.6"
   }
 }
