@@ -31,7 +31,7 @@
     "react-dom": "16.13.1",
     "react-firebase-hooks": "2.1.1",
     "styled-components": "5.1.0",
-    "yup": "0.28.5"
+    "yup": "0.29.1"
   },
   "devDependencies": {
     "@types/lodash": "4.14.150",
@@ -39,7 +39,7 @@
     "@types/react": "16.9.34",
     "@types/react-dom": "16.9.7",
     "@types/styled-components": "5.1.0",
-    "@types/yup": "0.26.37",
+    "@types/yup": "0.29.3",
     "cpx": "1.5.0",
     "cross-env": "7.0.2",
     "eslint": "6.8.0",
