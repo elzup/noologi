@@ -42,7 +42,7 @@
     "@types/yup": "0.26.37",
     "cpx": "1.5.0",
     "cross-env": "7.0.2",
-    "eslint": "6.8.0",
+    "eslint": "7.4.0",
     "eslint-config-nzap": "1.4.6",
     "firebase-tools": "8.2.0",
     "rimraf": "3.0.2",
