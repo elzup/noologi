@@ -1,6 +1,5 @@
 import * as firebase from 'firebase/app'
 import 'firebase/auth'
-import 'firebase/database'
 import 'firebase/firestore'
 import _ from 'lodash'
 import { useEffect, useState } from 'react'
@@ -98,9 +97,7 @@ export function useRoom(roomId: string): [Room | null, string | null] {
       (_.max(Object.keys(room.players).map(Number)) || 0) + 1
     )
 
-    initPlayer(roomId, newPlayerId).then(() => {
-      setPlayerId(newPlayerId)
-    })
+    setPlayerId(newPlayerId)
     return () => {
       // exitPlayer(roomId, newPlayerId)
     }
@@ -132,41 +129,6 @@ export const joinPlayer = async (roomId: string, playerId: string) => {
     ...players,
     [playerId]: { name: 'Player-' + playerId, tools: {} },
   })
-}
-
-const isOfflineForFirestore = {
-  state: 'offline',
-  lastChanged: firebase.firestore.FieldValue.serverTimestamp(),
-}
-
-const isOnlineForFirestore = {
-  state: 'online',
-  lastChanged: firebase.firestore.FieldValue.serverTimestamp(),
-}
-
-export const initPlayer = async (roomId: string, playerId: string) => {
-  const rdbRef = firebase.database().ref(`/status/${roomId}/${playerId}`)
-
-  firebase
-    .database()
-    .ref(`.info/connected`)
-    .on('value', (snapshot) => {
-      if (snapshot.val() == false) {
-        // Instead of simply returning, we'll also set Firestore's state
-        // to 'offline'. This ensures that our Firestore cache is aware
-        // of the switch to 'offline.'
-        exitPlayer(roomId, playerId)
-        return
-      }
-
-      rdbRef
-        .onDisconnect()
-        .set(isOfflineForFirestore)
-        .then(function () {
-          rdbRef.set(isOnlineForFirestore)
-          joinPlayer(roomId, playerId)
-        })
-    })
 }
 
 export const exitPlayer = async (roomId: string, playerId: string) => {
